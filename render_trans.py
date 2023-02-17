@@ -36,6 +36,10 @@ def set_camera_location(theta, phi, radius):
     trans = np.array([0, 0, -radius, 1]).reshape(-1, 1)
     extri = np.concatenate((extri[:, :3], trans), axis=1)
     pose = np.linalg.inv(extri)
+    pose = np.array([[-1, 0, 0, 0],
+                     [0, 0, 1, 0],
+                     [0, 1, 0, 0],
+                     [0, 0, 0, 1]]) @ pose
     x, y, z = pose[:3, 3]
     return x, y, z, pose
 
@@ -56,10 +60,10 @@ def load_obj(obj_path):
     bpy.ops.outliner.orphans_purge()
 
     # enable psa add-on
-    bpy.data.worlds['World'].psa_general_settings.enabled = True
+    bpy.data.worlds['World'].psa_general_settings.enabled = False
 
     # import obj
-    bpy.ops.import_scene.obj(filepath=obj_path, axis_forward='Z', axis_up='Y')
+    bpy.ops.import_scene.obj(filepath=obj_path, axis_forward='Y', axis_up='Z')
     bpy.ops.object.select_all(action='DESELECT')
 
     # join
@@ -101,9 +105,9 @@ def scene_setup(save_dir):
     k = get_k(focal, IMAGE_SIZE, IMAGE_SIZE)
 
     # add light
-    # bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=location, rotation=(0, 0, 0))
-    # light_dl = bpy.data.lights['Sun']
-    # light_dl.energy = 3
+    bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=location, rotation=(0, 0, 0))
+    light_dl = bpy.data.lights['Sun']
+    light_dl.energy = 3
     # light_dl.color = (0,1,0)
     # light = bpy.data.objects['Sun']
     # bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=(0, 10, 0), rotation=(-90, 0, 0))
@@ -121,8 +125,8 @@ def scene_setup(save_dir):
             rot_y = theta * np.pi / 180
             rot_x = phi * np.pi / 180
             scene.camera.rotation_mode = 'XYZ'
-            scene.camera.rotation_euler[0] = -rot_x  # important! nerf's rot_x is reversed
-            scene.camera.rotation_euler[1] = rot_y
+            scene.camera.rotation_euler[0] = -90 + rot_x  # important! nerf's rot_x is reversed
+            scene.camera.rotation_euler[2] = rot_y * -1
             # light.rotation_mode = 'XYZ'
             # light.rotation_euler[0] = -rot_x
             # light.rotation_euler[1] = rot_y
@@ -167,7 +171,7 @@ def render():
 def render_one():
     obj_path = '/media/zsh/data2/datasets/cars_selected/December_2020/test_ok/Chevrolet_Blazer_K5_1976/Chevrolet_Blazer_K5_1976.obj'
     # obj_path = '/mnt/data2/datasets/cars_selected/December_2020/test_ok/Chevrolet_Blazer_K5_1976/Chevrolet_Blazer_K5_1976.obj'
-    data_dir = './test_illu'
+    data_dir = './test_trans'
     load_obj(obj_path)
     save_dir = data_dir
     os.makedirs(save_dir, exist_ok=True)
