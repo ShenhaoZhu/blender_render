@@ -19,8 +19,8 @@ def set_camera_location(theta, phi, radius):
     def rot_phi(ph):
         return np.array([
             [1, 0, 0, 0],
-            [0, np.cos(ph), -np.sin(ph), 0],
-            [0, np.sin(ph), np.cos(ph), 0],
+            [0, np.cos(ph), np.sin(ph), 0],
+            [0, -np.sin(ph), np.cos(ph), 0],
             [0, 0, 0, 1]]).astype(np.float32)
 
     def rot_theta(th):
@@ -109,7 +109,7 @@ def scene_setup(save_dir):
     light_dl = bpy.data.lights['Sun']
     light_dl.energy = 3
     # light_dl.color = (0,1,0)
-    # light = bpy.data.objects['Sun']
+    light = bpy.data.objects['Sun']
     # bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=(0, 10, 0), rotation=(-90, 0, 0))
     # light_dl = bpy.data.lights['Sun.001']
     # light_dl.energy = 2
@@ -118,18 +118,18 @@ def scene_setup(save_dir):
     # set location
     frames = []
     for theta in range(-180, 180, 10):
-        for phi in range(0, 46, 15):
+        for phi in range(0, -46, -15):
             x, y, z, pose = set_camera_location(theta, phi, radius=RADIUS)
             scene.camera.location = x, y, z
-            # light.location = x, y, z
+            light.location = x, y, z
             rot_y = theta * np.pi / 180
             rot_x = phi * np.pi / 180
             scene.camera.rotation_mode = 'XYZ'
-            scene.camera.rotation_euler[0] = -90 + rot_x  # important! nerf's rot_x is reversed
-            scene.camera.rotation_euler[2] = rot_y * -1
-            # light.rotation_mode = 'XYZ'
-            # light.rotation_euler[0] = -rot_x
-            # light.rotation_euler[1] = rot_y
+            scene.camera.rotation_euler[0] = rot_x + np.pi / 2  # important! nerf's rot_x is reversed
+            scene.camera.rotation_euler[2] = rot_y + np.pi
+            light.rotation_mode = 'XYZ'
+            light.rotation_euler[0] = rot_x + np.pi / 2
+            light.rotation_euler[2] = rot_y + np.pi
 
 
             # file_name = '/media/zsh/data2/datasets/blender_render_10/test/1.png'
