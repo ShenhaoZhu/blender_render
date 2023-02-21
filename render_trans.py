@@ -60,8 +60,9 @@ def load_obj(obj_path):
     bpy.ops.outliner.orphans_purge()
 
     # enable psa add-on
-    bpy.data.worlds['World'].psa_general_settings.enabled = False
-
+    bpy.data.worlds['World'].psa_general_settings.enabled = True
+    bpy.data.objects['Starlight Sun'].rotation_euler[2] = -37 / 180 * np.pi
+    bpy.data.objects['Starlight Sun'].rotation_euler[0] = -11 / 180 * np.pi
     # import obj
     bpy.ops.import_scene.obj(filepath=obj_path, axis_forward='Y', axis_up='Z')
     bpy.ops.object.select_all(action='DESELECT')
@@ -83,6 +84,11 @@ def load_obj(obj_path):
     bpy.context.object.scale[2] = scale
 
 def scene_setup(save_dir):
+    # render settings
+    context = bpy.context
+    context.scene.render.engine = 'CYCLES'
+    context.scene.cycles.device = 'GPU'
+
     # render resolution
     data = bpy.data
     data.scenes['Scene'].render.resolution_x = IMAGE_SIZE
@@ -105,11 +111,11 @@ def scene_setup(save_dir):
     k = get_k(focal, IMAGE_SIZE, IMAGE_SIZE)
 
     # add light
-    bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=location, rotation=(0, 0, 0))
-    light_dl = bpy.data.lights['Sun']
-    light_dl.energy = 3
+    # bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=location, rotation=(0, 0, 0))
+    # light_dl = bpy.data.lights['Sun']
+    # light_dl.energy = 3
     # light_dl.color = (0,1,0)
-    light = bpy.data.objects['Sun']
+    # light = bpy.data.objects['Sun']
     # bpy.ops.object.light_add(type='SUN', radius=1, align='WORLD', location=(0, 10, 0), rotation=(-90, 0, 0))
     # light_dl = bpy.data.lights['Sun.001']
     # light_dl.energy = 2
@@ -121,15 +127,15 @@ def scene_setup(save_dir):
         for phi in range(0, -46, -15):
             x, y, z, pose = set_camera_location(theta, phi, radius=RADIUS)
             scene.camera.location = x, y, z
-            light.location = x, y, z
+            # light.location = x, y, z
             rot_y = theta * np.pi / 180
             rot_x = phi * np.pi / 180
             scene.camera.rotation_mode = 'XYZ'
             scene.camera.rotation_euler[0] = rot_x + np.pi / 2  # important! nerf's rot_x is reversed
             scene.camera.rotation_euler[2] = rot_y + np.pi
-            light.rotation_mode = 'XYZ'
-            light.rotation_euler[0] = rot_x + np.pi / 2
-            light.rotation_euler[2] = rot_y + np.pi
+            # light.rotation_mode = 'XYZ'
+            # light.rotation_euler[0] = rot_x + np.pi / 2
+            # light.rotation_euler[2] = rot_y + np.pi
 
 
             # file_name = '/media/zsh/data2/datasets/blender_render_10/test/1.png'
@@ -171,7 +177,7 @@ def render():
 def render_one():
     obj_path = '/media/zsh/data2/datasets/cars_selected/December_2020/test_ok/Chevrolet_Blazer_K5_1976/Chevrolet_Blazer_K5_1976.obj'
     # obj_path = '/mnt/data2/datasets/cars_selected/December_2020/test_ok/Chevrolet_Blazer_K5_1976/Chevrolet_Blazer_K5_1976.obj'
-    data_dir = './test_trans'
+    data_dir = './trans_ill_cycles_1'
     load_obj(obj_path)
     save_dir = data_dir
     os.makedirs(save_dir, exist_ok=True)
