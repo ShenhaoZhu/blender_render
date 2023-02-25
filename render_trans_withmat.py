@@ -227,34 +227,34 @@ def render():
 def render_one():
     obj_path = '/media/zsh/data2/datasets/cars_selected/December_2020/test_ok/Chevrolet_Blazer_K5_1976/Chevrolet_Blazer_K5_1976.obj'
     # obj_path = '/mnt/data2/datasets/cars_selected/December_2020/test_ok/Chevrolet_Blazer_K5_1976/Chevrolet_Blazer_K5_1976.obj'
-    data_dir = './trans_ill_newmat'
+    data_dir = './trans_ill_newnewmat'
     load_obj(obj_path)
     save_dir = data_dir
     os.makedirs(save_dir, exist_ok=True)
     scene_setup(save_dir)
 
-def process_one(section, obj_name, obj_dir):
-    data_dir = '/media/zsh/data2/datasets/blender_render_10_newmat'
-    obj_path = os.path.join(obj_dir, obj_name, f'{obj_name}.obj')
-    load_obj(obj_path)
-    save_dir = os.path.join(data_dir, section, obj_name)
-    os.makedirs(save_dir, exist_ok=True)
-    scene_setup(save_dir)
-
-def multiprocess_render():
-    base_dir = '/media/zsh/data2/datasets/cars_selected'
-    sections = sorted(os.listdir(base_dir))
-    # bpy.data.worlds['World'].psa_general_settings.enabled = True
-    for sec in sections:
-        obj_dir = os.path.join(base_dir, sec, 'test_ok')
-        pool = multiprocessing.Pool(processes=10)
-        for car_name in sorted(os.listdir(obj_dir)):
-            pool.apply_async(process_one, (sec, car_name, obj_dir))
-        pool.close()
-    pool.join()
+# def process_one(section, obj_name, obj_dir):
+#     data_dir = '/media/zsh/data2/datasets/blender_render_10_newmat'
+#     obj_path = os.path.join(obj_dir, obj_name, f'{obj_name}.obj')
+#     load_obj(obj_path)
+#     save_dir = os.path.join(data_dir, section, obj_name)
+#     os.makedirs(save_dir, exist_ok=True)
+#     scene_setup(save_dir)
+#
+# def multiprocess_render():
+#     base_dir = '/media/zsh/data2/datasets/cars_selected'
+#     sections = sorted(os.listdir(base_dir))
+#     # bpy.data.worlds['World'].psa_general_settings.enabled = True
+#     for sec in sections:
+#         obj_dir = os.path.join(base_dir, sec, 'test_ok')
+#         pool = multiprocessing.Pool(processes=10)
+#         for car_name in sorted(os.listdir(obj_dir)):
+#             pool.apply_async(process_one, (sec, car_name, obj_dir))
+#         pool.close()
+#     pool.join()
 
 
 if __name__ == '__main__':
-    render()
+    render_one()
 
 
